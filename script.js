@@ -1,27 +1,23 @@
 /* =========================================
-   PRAJJWAL PANDEY — RIGHT NOW
-   Interactive controls
+   PRAJJWAL RIGHT NOW
+   MAIN JAVASCRIPT
    ========================================= */
-
-const enterButton = document.getElementById("enterButton");
-const homeSection = document.getElementById("home");
-const soundButton = document.getElementById("soundButton");
-const scrollHint = document.querySelector(".scroll-hint");
-
-let speechActive = false;
-let ambientAudio = null;
-let ambientEnabled = false;
 
 
 /* =========================================
-   ENTER MY WORLD
+   ENTER BUTTON
    ========================================= */
+
+const enterButton = document.getElementById("enterButton");
 
 if (enterButton) {
   enterButton.addEventListener("click", () => {
 
-    if (homeSection) {
-      homeSection.scrollIntoView({
+    const firstSection =
+      document.querySelector(".page-section");
+
+    if (firstSection) {
+      firstSection.scrollIntoView({
         behavior: "smooth"
       });
     }
@@ -31,24 +27,64 @@ if (enterButton) {
 
 
 /* =========================================
-   HIDE SCROLL HINT AFTER SCROLLING
+   SCROLL HINT
    ========================================= */
 
-window.addEventListener("scroll", () => {
+const scrollHint =
+  document.querySelector(".scroll-hint");
 
-  if (!scrollHint) {
-    return;
-  }
+function updateScrollHint() {
+
+  if (!scrollHint) return;
 
   if (window.scrollY > 80) {
-
     scrollHint.classList.add("hidden");
-
   } else {
-
     scrollHint.classList.remove("hidden");
-
   }
+
+}
+
+window.addEventListener(
+  "scroll",
+  updateScrollHint,
+  { passive: true }
+);
+
+updateScrollHint();
+
+
+/* =========================================
+   SECTION SCROLL REVEAL
+   ========================================= */
+
+const revealSections =
+  document.querySelectorAll(".reveal");
+
+const revealObserver =
+  new IntersectionObserver(
+    (entries) => {
+
+      entries.forEach((entry) => {
+
+        if (entry.isIntersecting) {
+
+          entry.target.classList.add("visible");
+
+        }
+
+      });
+
+    },
+    {
+      threshold: 0.15
+    }
+  );
+
+
+revealSections.forEach((section) => {
+
+  revealObserver.observe(section);
 
 });
 
@@ -57,162 +93,207 @@ window.addEventListener("scroll", () => {
    TEXT TO SPEECH
    ========================================= */
 
+let currentSpeech = null;
+
 function listenSection(elementId) {
 
-  const element = document.getElementById(elementId);
+  const element =
+    document.getElementById(elementId);
 
-  if (!element) {
-    return;
-  }
+  if (!element) return;
 
-  if (speechActive) {
 
-    window.speechSynthesis.cancel();
+  /* Stop previous voice */
 
-    speechActive = false;
+  window.speechSynthesis.cancel();
 
-    restoreAmbientSound();
 
-    return;
-  }
+  const text =
+    element.innerText.trim();
 
-  const text = element.innerText;
+  if (!text) return;
 
-  if (!text) {
-    return;
-  }
 
-  const speech = new SpeechSynthesisUtterance(text);
+  const speech =
+    new SpeechSynthesisUtterance(text);
+
+
+  /* Voice settings */
 
   speech.lang = "en-IN";
-  speech.rate = 0.82;
+
+  speech.rate = 0.9;
+
   speech.pitch = 0.95;
+
   speech.volume = 1;
 
-  speechActive = true;
 
-  lowerAmbientSound();
+  currentSpeech = speech;
 
-  window.speechSynthesis.speak(speech);
+
+  /* Reduce ambient sound while speaking */
+
+  if (
+    window.ambientAudio &&
+    !window.ambientAudio.paused
+  ) {
+
+    window.ambientAudio.volume = 0.08;
+
+  }
+
 
   speech.onend = () => {
 
-    speechActive = false;
+    if (window.ambientAudio) {
 
-    restoreAmbientSound();
+      window.ambientAudio.volume = 0.22;
+
+    }
+
+    currentSpeech = null;
 
   };
+
 
   speech.onerror = () => {
 
-    speechActive = false;
+    if (window.ambientAudio) {
 
-    restoreAmbientSound();
+      window.ambientAudio.volume = 0.22;
+
+    }
+
+    currentSpeech = null;
 
   };
 
+
+  window.speechSynthesis.speak(speech);
+
 }
+
+
+/* =========================================
+   STOP SPEECH WHEN PAGE IS LEFT
+   ========================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (document.hidden) {
+
+      window.speechSynthesis.cancel();
+
+    }
+
+  }
+);
 
 
 /* =========================================
    AMBIENT SOUND
    ========================================= */
 
-function createAmbientAudio() {
+/*
+  Browser autoplay rules normally prevent
+  sound from starting automatically.
 
-  if (!ambientAudio) {
+  So the user starts ambient sound by
+  pressing the button.
+*/
 
-    ambientAudio = new Audio("audio/rain.mp3");
-
-    ambientAudio.loop = true;
-
-    ambientAudio.volume = 0.08;
-
-  }
-
-}
+const soundButton =
+  document.getElementById("soundButton");
 
 
-/* =========================================
-   AMBIENT SOUND BUTTON
-   ========================================= */
+/*
+  Ambient audio element
+*/
+
+const ambientAudio =
+  new Audio(
+    "https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a7345a.mp3"
+  );
+
+
+ambientAudio.loop = true;
+
+ambientAudio.volume = 0.22;
+
+
+/*
+  Make audio available globally
+  for the Listen button.
+*/
+
+window.ambientAudio =
+  ambientAudio;
+
+
+let ambientPlaying = false;
+
 
 if (soundButton) {
 
-  soundButton.addEventListener("click", () => {
+  soundButton.addEventListener(
+    "click",
+    async () => {
 
-    createAmbientAudio();
+      try {
 
-    if (!ambientEnabled) {
+        if (!ambientPlaying) {
 
-      ambientAudio.play()
-        .then(() => {
+          await ambientAudio.play();
 
-          ambientEnabled = true;
-
-          soundButton.textContent =
-            "🔊 Ambient Sound: ON";
-
-        })
-        .catch(() => {
+          ambientPlaying = true;
 
           soundButton.textContent =
-            "🎵 Tap again to play";
+            "🔇 Ambient Sound On";
 
-        });
+        } else {
 
-    } else {
+          ambientAudio.pause();
 
-      ambientAudio.pause();
+          ambientPlaying = false;
 
-      ambientEnabled = false;
+          soundButton.textContent =
+            "🎵 Ambient Sound";
 
-      soundButton.textContent =
-        "🎵 Ambient Sound: OFF";
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Ambient sound could not start:",
+          error
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   STOP AMBIENT SOUND WHEN PAGE IS CLOSED
+   ========================================= */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    if (window.ambientAudio) {
+
+      window.ambientAudio.pause();
 
     }
 
-  });
+    window.speechSynthesis.cancel();
 
-}
-
-
-/* =========================================
-   LOWER AMBIENT SOUND
-   ========================================= */
-
-function lowerAmbientSound() {
-
-  if (!ambientAudio || !ambientEnabled) {
-    return;
   }
-
-  ambientAudio.volume = 0.01;
-
-}
-
-
-/* =========================================
-   RESTORE AMBIENT SOUND
-   ========================================= */
-
-function restoreAmbientSound() {
-
-  if (!ambientAudio || !ambientEnabled) {
-    return;
-  }
-
-  ambientAudio.volume = 0.08;
-
-}
-
-
-/* =========================================
-   STOP SPEECH WHEN LEAVING PAGE
-   ========================================= */
-
-window.addEventListener("beforeunload", () => {
-
-  window.speechSynthesis.cancel();
-
-});
+);

@@ -1,8 +1,3 @@
-/* =========================================
-   PRAJJWAL PANDey — RIGHT NOW
-   Main visual design
-   ========================================= */
-
 * {
   margin: 0;
   padding: 0;
@@ -24,9 +19,7 @@ body {
   overflow-x: hidden;
 }
 
-/* =========================================
-   SPACE BACKGROUND
-   ========================================= */
+/* SPACE BACKGROUND */
 
 .space-background {
   position: fixed;
@@ -37,8 +30,6 @@ body {
     radial-gradient(circle at 50% 45%, rgba(45, 60, 110, 0.12), transparent 45%),
     linear-gradient(135deg, #080b16, #10162b 55%, #080b16);
 }
-
-/* Stars */
 
 .stars,
 .stars::before,
@@ -77,15 +68,12 @@ body {
   }
 }
 
-/* =========================================
-   PLANETS / GLOWING OBJECTS
-   ========================================= */
+/* PLANETS */
 
 .planet {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(0.2px);
 }
 
 .planet-one {
@@ -132,7 +120,7 @@ body {
   }
 }
 
-/* Large atmospheric glow */
+/* GLOW */
 
 .glow-orb {
   position: absolute;
@@ -160,9 +148,7 @@ body {
   }
 }
 
-/* =========================================
-   OPENING SCREEN
-   ========================================= */
+/* OPENING SCREEN */
 
 .opening-screen {
   min-height: 100vh;
@@ -247,9 +233,7 @@ h1 {
   font-size: 16px;
 }
 
-/* =========================================
-   ENTER BUTTON
-   ========================================= */
+/* ENTER BUTTON */
 
 .enter-button {
   border: 1px solid rgba(180, 195, 255, 0.35);
@@ -276,9 +260,7 @@ h1 {
   transform: scale(0.96);
 }
 
-/* =========================================
-   SCROLL HINT
-   ========================================= */
+/* SCROLL HINT */
 
 .scroll-hint {
   position: absolute;
@@ -292,12 +274,24 @@ h1 {
   color: #7e89a8;
   font-size: 25px;
   animation: scrollFloat 2s ease-in-out infinite;
+  opacity: 1;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
 }
 
 .scroll-hint span {
   font-size: 11px;
   letter-spacing: 2px;
   text-transform: uppercase;
+}
+
+/* HIDE SCROLL HINT */
+
+.scroll-hint.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 15px);
 }
 
 @keyframes scrollFloat {
@@ -310,9 +304,7 @@ h1 {
   }
 }
 
-/* =========================================
-   MAIN SECTION
-   ========================================= */
+/* MAIN SECTION */
 
 .page-section {
   min-height: 100vh;
@@ -346,9 +338,7 @@ h1 {
   max-width: 700px;
 }
 
-/* =========================================
-   LISTEN BUTTON
-   ========================================= */
+/* LISTEN */
 
 .listen-button {
   align-self: flex-start;
@@ -367,9 +357,11 @@ h1 {
   transform: translateY(-2px);
 }
 
-/* =========================================
-   AMBIENT SOUND BUTTON
-   ========================================= */
+.listen-button:active {
+  transform: scale(0.96);
+}
+
+/* AMBIENT SOUND */
 
 .audio-controls {
   position: fixed;
@@ -394,9 +386,11 @@ h1 {
   background: rgba(80, 95, 160, 0.2);
 }
 
-/* =========================================
-   MOBILE
-   ========================================= */
+#soundButton:active {
+  transform: scale(0.96);
+}
+
+/* MOBILE */
 
 @media (max-width: 600px) {
 
@@ -443,11 +437,13 @@ h1 {
     right: 12px;
     bottom: 12px;
   }
+
+  .scroll-hint {
+    bottom: 22px;
+  }
 }
 
-/* =========================================
-   ACCESSIBILITY
-   ========================================= */
+/* ACCESSIBILITY */
 
 @media (prefers-reduced-motion: reduce) {
 

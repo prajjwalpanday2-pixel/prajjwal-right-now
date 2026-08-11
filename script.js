@@ -1,27 +1,18 @@
 /* =========================================
-   PRAJJWAL RIGHT NOW
-   MAIN JAVASCRIPT
-   ========================================= */
-
-
-/* =========================================
    ENTER BUTTON
    ========================================= */
 
 const enterButton = document.getElementById("enterButton");
 
 if (enterButton) {
-  enterButton.addEventListener("click", () => {
-
-    const firstSection =
-      document.querySelector(".page-section");
+  enterButton.addEventListener("click", function () {
+    const firstSection = document.querySelector(".page-section");
 
     if (firstSection) {
       firstSection.scrollIntoView({
         behavior: "smooth"
       });
     }
-
   });
 }
 
@@ -30,11 +21,9 @@ if (enterButton) {
    SCROLL HINT
    ========================================= */
 
-const scrollHint =
-  document.querySelector(".scroll-hint");
+const scrollHint = document.querySelector(".scroll-hint");
 
-function updateScrollHint() {
-
+function hideScrollHint() {
   if (!scrollHint) return;
 
   if (window.scrollY > 80) {
@@ -42,258 +31,65 @@ function updateScrollHint() {
   } else {
     scrollHint.classList.remove("hidden");
   }
-
 }
 
-window.addEventListener(
-  "scroll",
-  updateScrollHint,
-  { passive: true }
-);
-
-updateScrollHint();
+window.addEventListener("scroll", hideScrollHint);
+hideScrollHint();
 
 
 /* =========================================
-   SECTION SCROLL REVEAL
+   SECTION REVEAL
    ========================================= */
 
-const revealSections =
-  document.querySelectorAll(".reveal");
+const sections = document.querySelectorAll(".reveal");
 
-const revealObserver =
-  new IntersectionObserver(
-    (entries) => {
+function showSections() {
+  sections.forEach(function (section) {
+    const position = section.getBoundingClientRect();
 
-      entries.forEach((entry) => {
-
-        if (entry.isIntersecting) {
-
-          entry.target.classList.add("visible");
-
-        }
-
-      });
-
-    },
-    {
-      threshold: 0.15
+    if (position.top < window.innerHeight * 0.9) {
+      section.classList.add("visible");
     }
-  );
+  });
+}
 
+window.addEventListener("scroll", showSections);
 
-revealSections.forEach((section) => {
-
-  revealObserver.observe(section);
-
-});
+showSections();
 
 
 /* =========================================
-   TEXT TO SPEECH
+   LISTEN
    ========================================= */
-
-let currentSpeech = null;
 
 function listenSection(elementId) {
 
-  const element =
-    document.getElementById(elementId);
+  const element = document.getElementById(elementId);
 
   if (!element) return;
 
-
-  /* Stop previous voice */
-
   window.speechSynthesis.cancel();
 
-
-  const text =
-    element.innerText.trim();
-
-  if (!text) return;
-
-
   const speech =
-    new SpeechSynthesisUtterance(text);
-
-
-  /* Voice settings */
+    new SpeechSynthesisUtterance(element.innerText);
 
   speech.lang = "en-IN";
-
-  speech.rate = 0.9;
-
+  speech.rate = 0.88;
   speech.pitch = 0.95;
-
   speech.volume = 1;
 
-
-  currentSpeech = speech;
-
-
-  /* Reduce ambient sound while speaking */
-
-  if (
-    window.ambientAudio &&
-    !window.ambientAudio.paused
-  ) {
-
-    window.ambientAudio.volume = 0.08;
-
-  }
-
-
-  speech.onend = () => {
-
-    if (window.ambientAudio) {
-
-      window.ambientAudio.volume = 0.22;
-
-    }
-
-    currentSpeech = null;
-
-  };
-
-
-  speech.onerror = () => {
-
-    if (window.ambientAudio) {
-
-      window.ambientAudio.volume = 0.22;
-
-    }
-
-    currentSpeech = null;
-
-  };
-
-
   window.speechSynthesis.speak(speech);
-
 }
 
 
 /* =========================================
-   STOP SPEECH WHEN PAGE IS LEFT
+   STOP VOICE WHEN PAGE IS HIDDEN
    ========================================= */
 
-document.addEventListener(
-  "visibilitychange",
-  () => {
+document.addEventListener("visibilitychange", function () {
 
-    if (document.hidden) {
-
-      window.speechSynthesis.cancel();
-
-    }
-
-  }
-);
-
-
-/* =========================================
-   AMBIENT SOUND
-   ========================================= */
-
-/*
-  Browser autoplay rules normally prevent
-  sound from starting automatically.
-
-  So the user starts ambient sound by
-  pressing the button.
-*/
-
-const soundButton =
-  document.getElementById("soundButton");
-
-
-/*
-  Ambient audio element
-*/
-
-const ambientAudio =
-  new Audio(
-    "https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a7345a.mp3"
-  );
-
-
-ambientAudio.loop = true;
-
-ambientAudio.volume = 0.22;
-
-
-/*
-  Make audio available globally
-  for the Listen button.
-*/
-
-window.ambientAudio =
-  ambientAudio;
-
-
-let ambientPlaying = false;
-
-
-if (soundButton) {
-
-  soundButton.addEventListener(
-    "click",
-    async () => {
-
-      try {
-
-        if (!ambientPlaying) {
-
-          await ambientAudio.play();
-
-          ambientPlaying = true;
-
-          soundButton.textContent =
-            "🔇 Ambient Sound On";
-
-        } else {
-
-          ambientAudio.pause();
-
-          ambientPlaying = false;
-
-          soundButton.textContent =
-            "🎵 Ambient Sound";
-
-        }
-
-      } catch (error) {
-
-        console.log(
-          "Ambient sound could not start:",
-          error
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================
-   STOP AMBIENT SOUND WHEN PAGE IS CLOSED
-   ========================================= */
-
-window.addEventListener(
-  "beforeunload",
-  () => {
-
-    if (window.ambientAudio) {
-
-      window.ambientAudio.pause();
-
-    }
-
+  if (document.hidden) {
     window.speechSynthesis.cancel();
-
   }
-);
+
+});

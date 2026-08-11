@@ -5,8 +5,8 @@
 
 const enterButton = document.getElementById("enterButton");
 const homeSection = document.getElementById("home");
-
 const soundButton = document.getElementById("soundButton");
+const scrollHint = document.querySelector(".scroll-hint");
 
 let speechActive = false;
 let ambientAudio = null;
@@ -31,6 +31,29 @@ if (enterButton) {
 
 
 /* =========================================
+   HIDE SCROLL HINT AFTER SCROLLING
+   ========================================= */
+
+window.addEventListener("scroll", () => {
+
+  if (!scrollHint) {
+    return;
+  }
+
+  if (window.scrollY > 80) {
+
+    scrollHint.classList.add("hidden");
+
+  } else {
+
+    scrollHint.classList.remove("hidden");
+
+  }
+
+});
+
+
+/* =========================================
    TEXT TO SPEECH
    ========================================= */
 
@@ -42,9 +65,10 @@ function listenSection(elementId) {
     return;
   }
 
-  /* Stop current speech if already speaking */
   if (speechActive) {
+
     window.speechSynthesis.cancel();
+
     speechActive = false;
 
     restoreAmbientSound();
@@ -58,23 +82,19 @@ function listenSection(elementId) {
     return;
   }
 
-  /* Create speech */
   const speech = new SpeechSynthesisUtterance(text);
 
   speech.lang = "en-IN";
-  speech.rate = 0.9;
-  speech.pitch = 1;
+  speech.rate = 0.82;
+  speech.pitch = 0.95;
   speech.volume = 1;
 
   speechActive = true;
 
-  /* Reduce background sound */
   lowerAmbientSound();
 
-  /* Start speaking */
   window.speechSynthesis.speak(speech);
 
-  /* When speech finishes */
   speech.onend = () => {
 
     speechActive = false;
@@ -83,7 +103,6 @@ function listenSection(elementId) {
 
   };
 
-  /* If an error happens */
   speech.onerror = () => {
 
     speechActive = false;
@@ -91,19 +110,13 @@ function listenSection(elementId) {
     restoreAmbientSound();
 
   };
+
 }
 
 
 /* =========================================
    AMBIENT SOUND
    ========================================= */
-
-/*
-   Audio file will be added later.
-
-   Example:
-   audio/rain.mp3
-*/
 
 function createAmbientAudio() {
 
@@ -112,6 +125,7 @@ function createAmbientAudio() {
     ambientAudio = new Audio("audio/rain.mp3");
 
     ambientAudio.loop = true;
+
     ambientAudio.volume = 0.08;
 
   }
@@ -136,12 +150,14 @@ if (soundButton) {
 
           ambientEnabled = true;
 
-          soundButton.textContent = "🔊 Ambient Sound: ON";
+          soundButton.textContent =
+            "🔊 Ambient Sound: ON";
 
         })
         .catch(() => {
 
-          soundButton.textContent = "🎵 Tap again to play";
+          soundButton.textContent =
+            "🎵 Tap again to play";
 
         });
 
@@ -151,7 +167,8 @@ if (soundButton) {
 
       ambientEnabled = false;
 
-      soundButton.textContent = "🎵 Ambient Sound: OFF";
+      soundButton.textContent =
+        "🎵 Ambient Sound: OFF";
 
     }
 
@@ -171,6 +188,7 @@ function lowerAmbientSound() {
   }
 
   ambientAudio.volume = 0.01;
+
 }
 
 
@@ -185,6 +203,7 @@ function restoreAmbientSound() {
   }
 
   ambientAudio.volume = 0.08;
+
 }
 
 

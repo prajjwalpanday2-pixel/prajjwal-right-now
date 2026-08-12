@@ -377,8 +377,7 @@ h1 {
 
   font-size: 25px;
 
-  animation:
-    scrollFloat 2s ease-in-out infinite;
+  animation: scrollFloat 2s ease-in-out infinite;
 
   opacity: 1;
 
@@ -763,7 +762,6 @@ h1 {
    ========================================= */
 
 @media (max-width: 700px) {
-
   .planet-one {
     width: 85px;
     height: 85px;
@@ -794,7 +792,6 @@ h1 {
 
   .intro-description {
     font-size: 15px;
-
     line-height: 1.7;
   }
 
@@ -879,15 +876,11 @@ h1 {
    ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-
     animation-iteration-count: 1 !important;
-
     scroll-behavior: auto !important;
   }
-
 }

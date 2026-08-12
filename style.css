@@ -878,3 +878,81 @@ h1 {
   }
 
 }
+/* =========================================
+   SUPPORT / QR CARD
+   ========================================= */
+
+.support-section .section-content {
+  width: 100%;
+}
+
+.support-card {
+  width: min(100%, 420px);
+  margin: 35px auto 0;
+
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border: 1px solid rgba(170, 185, 255, 0.16);
+  border-radius: 28px;
+
+  background: rgba(35, 45, 80, 0.20);
+
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 20px 70px rgba(20, 30, 70, 0.20);
+
+  overflow: hidden;
+}
+
+.support-qr {
+  display: block;
+
+  width: min(100%, 330px);
+  height: auto;
+
+  border-radius: 18px;
+
+  object-fit: contain;
+
+  box-shadow:
+    0 0 35px rgba(170, 190, 255, 0.08);
+}
+
+.support-note {
+  margin-top: 18px;
+
+  text-align: center;
+
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+
+  color: #8f99b8 !important;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .support-card {
+    width: 100%;
+    max-width: 350px;
+
+    padding: 16px;
+
+    margin-top: 28px;
+
+    border-radius: 22px;
+  }
+
+  .support-qr {
+    width: min(100%, 290px);
+    border-radius: 14px;
+  }
+
+}
